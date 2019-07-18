@@ -83,7 +83,24 @@ namespace AlgorithmsDataStructures2
             if (Root != null)
             {
                 BSTNode<T> node = Root;
-                
+
+                BSTFind<T> bst_find = FindNodeByKey(key);
+                if (!bst_find.NodeHasKey)
+                {
+                    if (bst_find.Node != null)
+                    {
+                        if (!bst_find.NodeHasKey && bst_find.ToLeft)
+                        {
+                            bst_find.Node.LeftChild = new BSTNode<T>(key, val, bst_find.Node);
+                            return true;
+                        }
+                        else if (bst_find.NodeHasKey && !bst_find.ToLeft)
+                        {
+                            bst_find.Node.RightChild = new BSTNode<T>(key, val, bst_find.Node);
+                            return true;
+                        }
+                    }
+                }
             }
             // добавляем ключ-значение в дерево
             return false; // если ключ уже есть
