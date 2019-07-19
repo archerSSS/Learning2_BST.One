@@ -55,23 +55,8 @@ namespace AlgorithmsDataStructures2
             if (Root != null)
             {
                 BSTFind<T> bst_find = new BSTFind<T>();
-                if (Root.NodeKey == key)
-                {
-                    bst_find.ToLeft = Root.LeftChild == null;
-                    if (Root.LeftChild != null || Root.RightChild != null)
-                    {
-                        if (Root.LeftChild != null && Root.RightChild != null) bst_find.NodeHasKey = true;
-                        bst_find.Node = Root;   
-                    }
-                }
-
-                else if (Root.NodeKey > key)
-                    if (Root.LeftChild != null) bst_find = FindNodeByKey(key, Root.LeftChild, bst_find);
-                    else bst_find.ToLeft = true;
-
-                else if (Root.RightChild != null)
-                    bst_find = FindNodeByKey(key, Root.RightChild, bst_find);
-
+                if (Root.LeftChild != null || Root.RightChild != null)
+                    return FindNodeByKey(key, Root, bst_find);
                 return bst_find;
             }
             // ищем в дереве узел и сопутствующую информацию по ключу
@@ -80,27 +65,11 @@ namespace AlgorithmsDataStructures2
 
         public bool AddKeyValue(int key, T val)
         {
-            if (Root != null)
+            BSTFind<T> bst_find = FindNodeByKey(key);
+            if (bst_find.Node != null && !bst_find.NodeHasKey)
             {
-                BSTNode<T> node = Root;
-
-                BSTFind<T> bst_find = FindNodeByKey(key);
-                if (!bst_find.NodeHasKey)
-                {
-                    if (bst_find.Node != null)
-                    {
-                        if (!bst_find.NodeHasKey && bst_find.ToLeft)
-                        {
-                            bst_find.Node.LeftChild = new BSTNode<T>(key, val, bst_find.Node);
-                            return true;
-                        }
-                        else if (bst_find.NodeHasKey && !bst_find.ToLeft)
-                        {
-                            bst_find.Node.RightChild = new BSTNode<T>(key, val, bst_find.Node);
-                            return true;
-                        }
-                    }
-                }
+                if (bst_find.ToLeft) bst_find.Node.LeftChild = new BSTNode<T>(key, val, bst_find.Node);
+                else bst_find.Node.RightChild = new BSTNode<T>(key, val, bst_find.Node);
             }
             // добавляем ключ-значение в дерево
             return false; // если ключ уже есть
@@ -108,43 +77,75 @@ namespace AlgorithmsDataStructures2
 
         public BSTNode<T> FinMinMax(BSTNode<T> FromNode, bool FindMax)
         {
+            BSTNode<T> MinMax = Root; 
+            while (MinMax != null)
+            {
+                if (FindMax) MinMax = MinMax.RightChild;
+                else MinMax = MinMax.LeftChild;
+            }
+            return MinMax;
             // ищем максимальное/минимальное в поддереве
             return null;
         }
 
         public bool DeleteNodeByKey(int key)
         {
+            BSTFind<T> bst_find = FindNodeByKey(key);
+            if (bst_find.NodeHasKey)
+            {
+                if (bst_find.Node.RightChild != null) bst_find.Node = bst_find.Node.RightChild;
+                else if (bst_find.Node.LeftChild != null) bst_find.Node = bst_find.Node.LeftChild;
+                else bst_find.Node = bst_find.Node.Parent;  // доработать!!!
+            }
             // удаляем узел по ключу
             return false; // если узел не найден
         }
 
         public int Count()
         {
+            if (Root != null)
+                return CountNodes(Root.RightChild) + CountNodes(Root.LeftChild) + 1;
             return 0; // количество узлов в дереве
-        }
-
-        private bool KeyBiggerThen(int nodeKey, int key)
-        {
-            if (nodeKey > key) return true;
-            return false;
         }
 
         private BSTFind<T> FindNodeByKey(int key, BSTNode<T> node, BSTFind<T> bst_find)
         {
             bst_find.Node = node;
-            
-            if (node.NodeKey == key)
+            if (node.NodeKey > key)
             {
-                bst_find.NodeHasKey = node.LeftChild != null && node.RightChild != null;
+                if (node.LeftChild != null) return FindNodeByKey(key, node.LeftChild, bst_find);
+                bst_find.ToLeft = true;
                 return bst_find;
             }
-            else if (node.NodeKey > key)
+            else
             {
-                if (node.LeftChild != null) return FindNodeByKey(key, node, bst_find);
-                bst_find.ToLeft = true;
+                if (node.NodeKey == key) bst_find.NodeHasKey = true;
+                else if (node.RightChild != null) return FindNodeByKey(key, node.RightChild, bst_find);
+                return bst_find;
             }
-            return bst_find;
+        }
+
+        private BSTNode<T> FindToDelete(int key)
+        {
+            BSTNode<T> node = Root;
+            while (true)
+            {
+                if (node != null)
+                {
+                    if (node.NodeKey == key) return node;
+                    else if (node.NodeKey > key && node.LeftChild != null) node = node.LeftChild;
+                    else if (node.NodeKey < key && node.RightChild != null) node = node.RightChild;
+                    break;
+                }
+            }
             return null;
+        }
+
+        private int CountNodes(BSTNode<T> node)
+        {
+            if (node != null)
+                return CountNodes(node.LeftChild) + CountNodes(node.RightChild) + 1;
+            return 0;
         }
     }
 }
