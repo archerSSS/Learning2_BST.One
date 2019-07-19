@@ -77,13 +77,19 @@ namespace AlgorithmsDataStructures2
 
         public BSTNode<T> FinMinMax(BSTNode<T> FromNode, bool FindMax)
         {
-            BSTNode<T> MinMax = Root; 
-            while (MinMax != null)
+            BSTNode<T> MinMax = Root;
+
+            if (MinMax != null)
             {
-                if (FindMax) MinMax = MinMax.RightChild;
-                else MinMax = MinMax.LeftChild;
+                if (FindMax)
+                    while (MinMax.RightChild != null)
+                        MinMax = MinMax.RightChild;
+                else
+                    while (MinMax.LeftChild != null)
+                        MinMax = MinMax.LeftChild;
+
+                return MinMax;
             }
-            return MinMax;
             // ищем максимальное/минимальное в поддереве
             return null;
         }
@@ -93,9 +99,11 @@ namespace AlgorithmsDataStructures2
             BSTFind<T> bst_find = FindNodeByKey(key);
             if (bst_find.NodeHasKey)
             {
-                if (bst_find.Node.RightChild != null) bst_find.Node = bst_find.Node.RightChild;
-                else if (bst_find.Node.LeftChild != null) bst_find.Node = bst_find.Node.LeftChild;
-                else bst_find.Node = bst_find.Node.Parent;  // доработать!!!
+                BSTNode<T> node = FindSuccessor(bst_find.Node);
+                if (bst_find.Node.RightChild != null)
+                    bst_find.Node.RightChild.Parent = node;
+                if (bst_find.Node.LeftChild != null)
+                    bst_find.Node.LeftChild.Parent = node;
             }
             // удаляем узел по ключу
             return false; // если узел не найден
@@ -124,21 +132,33 @@ namespace AlgorithmsDataStructures2
                 return bst_find;
             }
         }
-
-        private BSTNode<T> FindToDelete(int key)
+        
+        private BSTNode<T> FindSuccessor(BSTNode<T> node)
         {
-            BSTNode<T> node = Root;
-            while (true)
+            if (node.RightChild != null)
+                node = node.RightChild;
+
+            else if (node.LeftChild != null)
+                node = node.LeftChild;
+
+            while (node.LeftChild != null || node.RightChild != null)
             {
-                if (node != null)
-                {
-                    if (node.NodeKey == key) return node;
-                    else if (node.NodeKey > key && node.LeftChild != null) node = node.LeftChild;
-                    else if (node.NodeKey < key && node.RightChild != null) node = node.RightChild;
-                    break;
-                }
+                if (node.LeftChild != null) node = node.LeftChild;
+                else node = node.RightChild;
+            } 
+            return node;
+        }
+
+        private void MoveInsteadOf(BSTNode<T> successor, BSTNode<T> node)
+        {
+            if (node.RightChild != null) successor.RightChild = node.RightChild;
+            if (node.LeftChild != null) successor.LeftChild = node.LeftChild;
+
+            if (node.Parent != null)
+            {
+                if (node.Parent.LeftChild != null && node.Parent.LeftChild.NodeKey == node.NodeKey) node.Parent.LeftChild = successor;
+                else if (node.Parent.RightChild != null && node.Parent.RightChild.NodeKey == node.NodeKey) node.Parent.RightChild = successor; 
             }
-            return null;
         }
 
         private int CountNodes(BSTNode<T> node)
