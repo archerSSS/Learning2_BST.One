@@ -57,6 +57,8 @@ namespace AlgorithmsDataStructures2
                 BSTFind<T> bst_find = new BSTFind<T>();
                 if (Root.LeftChild != null || Root.RightChild != null)
                     return FindNodeByKey(key, Root, bst_find);
+                bst_find.NodeHasKey = Root.NodeKey == key;
+                bst_find.ToLeft = Root.NodeKey > key;
                 return bst_find;
             }
             // ищем в дереве узел и сопутствующую информацию по ключу
@@ -65,11 +67,23 @@ namespace AlgorithmsDataStructures2
 
         public bool AddKeyValue(int key, T val)
         {
+            if (Root == null)
+            {
+                Root = new BSTNode<T>(key, val, null);
+                return true;
+            }
             BSTFind<T> bst_find = FindNodeByKey(key);
             if (bst_find.Node != null && !bst_find.NodeHasKey)
             {
                 if (bst_find.ToLeft) bst_find.Node.LeftChild = new BSTNode<T>(key, val, bst_find.Node);
                 else bst_find.Node.RightChild = new BSTNode<T>(key, val, bst_find.Node);
+                return true;
+            }
+            else if (bst_find.Node == null)
+            {
+                if (bst_find.ToLeft) Root.LeftChild = new BSTNode<T>(key, val, Root);
+                else Root.RightChild = new BSTNode<T>(key, val, Root);
+                return true;
             }
             // добавляем ключ-значение в дерево
             return false; // если ключ уже есть
@@ -77,7 +91,7 @@ namespace AlgorithmsDataStructures2
 
         public BSTNode<T> FinMinMax(BSTNode<T> FromNode, bool FindMax)
         {
-            BSTNode<T> MinMax = Root;
+            BSTNode<T> MinMax = FromNode;
 
             if (MinMax != null)
             {
@@ -99,11 +113,26 @@ namespace AlgorithmsDataStructures2
             BSTFind<T> bst_find = FindNodeByKey(key);
             if (bst_find.NodeHasKey)
             {
-                BSTNode<T> node = FindSuccessor(bst_find.Node);
-                if (bst_find.Node.RightChild != null)
-                    bst_find.Node.RightChild.Parent = node;
-                if (bst_find.Node.LeftChild != null)
-                    bst_find.Node.LeftChild.Parent = node;
+                BSTNode<T> node = bst_find.Node;
+                BSTNode<T> successor;
+                if (node.RightChild != null)
+                {
+                    successor = FindSuccessor(node.RightChild);
+                    successor.Parent = node.Parent;
+
+                    successor.LeftChild = node.LeftChild;
+                    successor.RightChild = node.RightChild;
+
+                    ReplaceChildWith(node, successor);
+                }
+                else if (node.LeftChild != null)
+                {
+                    node.LeftChild.Parent = node.Parent;
+
+                    ReplaceChildWith(node, node.LeftChild);
+                }
+                
+                return true;
             }
             // удаляем узел по ключу
             return false; // если узел не найден
@@ -135,18 +164,23 @@ namespace AlgorithmsDataStructures2
         
         private BSTNode<T> FindSuccessor(BSTNode<T> node)
         {
-            if (node.RightChild != null)
-                node = node.RightChild;
-
-            else if (node.LeftChild != null)
-                node = node.LeftChild;
-
             while (node.LeftChild != null || node.RightChild != null)
             {
                 if (node.LeftChild != null) node = node.LeftChild;
-                else node = node.RightChild;
-            } 
+                else if (node.RightChild != null)
+                {
+                    //node.Parent.LeftChild = node.RightChild;
+                    node.RightChild.Parent = node.Parent;
+                    return node;
+                }
+            }
             return node;
+        }
+
+        private void ReplaceChildWith(BSTNode<T> child, BSTNode<T> new_child)
+        {
+            if (child.NodeKey < child.Parent.NodeKey) child.Parent.LeftChild = new_child;
+            else child.Parent.RightChild = new_child;
         }
 
         private void MoveInsteadOf(BSTNode<T> successor, BSTNode<T> node)

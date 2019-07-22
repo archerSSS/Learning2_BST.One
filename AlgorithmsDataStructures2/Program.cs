@@ -9,8 +9,14 @@ namespace AlgorithmsDataStructures2
     public class Program
     {
         public static void Main(string[] args)
-        {
-            bool g;
+        {   
+            int n1;
+            int n2;
+            int result;
+
+
+
+            n1 = 9 >> 1;
         }
     }
 }
