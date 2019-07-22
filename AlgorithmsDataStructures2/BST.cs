@@ -118,20 +118,15 @@ namespace AlgorithmsDataStructures2
                 if (node.RightChild != null)
                 {
                     successor = FindSuccessor(node.RightChild);
-                    successor.Parent = node.Parent;
-
-                    successor.LeftChild = node.LeftChild;
-                    successor.RightChild = node.RightChild;
-
+                    RemoveBounds(successor);
+                    RebindChildren(node, successor);
                     ReplaceChildWith(node, successor);
                 }
                 else if (node.LeftChild != null)
-                {
-                    node.LeftChild.Parent = node.Parent;
-
                     ReplaceChildWith(node, node.LeftChild);
-                }
-                
+                else if (node.NodeKey < node.Parent.NodeKey) node.Parent.LeftChild = null;
+                else node.Parent.RightChild = null;
+
                 return true;
             }
             // удаляем узел по ключу
@@ -161,38 +156,54 @@ namespace AlgorithmsDataStructures2
                 return bst_find;
             }
         }
-        
+
+        // Поиск преемника для удаляемого узла.
+        // Поиск производится либо от правого либо от левого потомка удаляемого узла.
+        //
+        // Поиск продолжается по левым потомкам пока не доберется до узла не имеющего 
+        //      своего левого потомка и возвращает этот узел.
+        // 
+        //
         private BSTNode<T> FindSuccessor(BSTNode<T> node)
         {
             while (node.LeftChild != null || node.RightChild != null)
-            {
-                if (node.LeftChild != null) node = node.LeftChild;
-                else if (node.RightChild != null)
-                {
-                    //node.Parent.LeftChild = node.RightChild;
-                    node.RightChild.Parent = node.Parent;
-                    return node;
-                }
-            }
+                if (node.LeftChild != null)
+                    node = node.LeftChild;
+
             return node;
         }
 
         private void ReplaceChildWith(BSTNode<T> child, BSTNode<T> new_child)
         {
-            if (child.NodeKey < child.Parent.NodeKey) child.Parent.LeftChild = new_child;
-            else child.Parent.RightChild = new_child;
+            if (child.Parent != null)
+            {
+                if (child.NodeKey < child.Parent.NodeKey) child.Parent.LeftChild = new_child;
+                else child.Parent.RightChild = new_child;
+                new_child.Parent = child.Parent;
+            }
+            else Root = new_child;
         }
 
-        private void MoveInsteadOf(BSTNode<T> successor, BSTNode<T> node)
+        private void RebindChildren(BSTNode<T> node, BSTNode<T> successor)
         {
-            if (node.RightChild != null) successor.RightChild = node.RightChild;
-            if (node.LeftChild != null) successor.LeftChild = node.LeftChild;
-
-            if (node.Parent != null)
+            if (node.LeftChild != null && !node.LeftChild.Equals(successor))
             {
-                if (node.Parent.LeftChild != null && node.Parent.LeftChild.NodeKey == node.NodeKey) node.Parent.LeftChild = successor;
-                else if (node.Parent.RightChild != null && node.Parent.RightChild.NodeKey == node.NodeKey) node.Parent.RightChild = successor; 
+                successor.LeftChild = node.LeftChild;
+                node.LeftChild.Parent = successor;
             }
+            if (node.RightChild != null && !node.RightChild.Equals(successor))
+            {
+                successor.RightChild = node.RightChild;
+                node.RightChild.Parent = successor;
+            }
+        }
+
+        private void RemoveBounds(BSTNode<T> node)
+        {
+            if (node.NodeKey < node.Parent.NodeKey) node.Parent.LeftChild = node.RightChild;
+            else node.Parent.RightChild = node.RightChild;
+            if (node.RightChild != null && !node.Parent.LeftChild.Equals(node))
+                node.RightChild.Parent = node.Parent;
         }
 
         private int CountNodes(BSTNode<T> node)

@@ -158,11 +158,104 @@ namespace AlgoTest_1
             BST<int> btree = GetTree();
 
             btree.DeleteNodeByKey(4);
-
-            Assert.AreEqual(null, btree.FindNodeByKey(4));
+            Assert.AreEqual(false, btree.FindNodeByKey(4).NodeHasKey);
             Assert.AreEqual(true, btree.FindNodeByKey(6).NodeHasKey);
             Assert.AreEqual(true, btree.FindNodeByKey(6).Node.LeftChild != null);
             Assert.AreEqual(true, btree.FindNodeByKey(6).Node.RightChild == null);
+        }
+
+        [TestMethod]
+        public void TestDelete_2()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(2);
+            Assert.AreEqual(false, btree.FindNodeByKey(2).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(4).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(3).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(0).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(3).Node.LeftChild != null);
+            Assert.AreEqual(true, btree.FindNodeByKey(3).Node.RightChild == null);
+            Assert.AreEqual(true, btree.FindNodeByKey(3).Node.Parent != null);
+            Assert.AreEqual(true, btree.FindNodeByKey(3).Node.LeftChild.Parent != null);
+        }
+
+        [TestMethod]
+        public void TestDelete_3()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(18);
+            Assert.AreEqual(false, btree.FindNodeByKey(18).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(22).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(16).NodeHasKey);
+
+            Assert.AreEqual(17, btree.FindNodeByKey(20).Node.LeftChild.NodeKey);
+            Assert.AreEqual(22, btree.FindNodeByKey(20).Node.RightChild.NodeKey);
+            Assert.AreEqual(16, btree.FindNodeByKey(20).Node.Parent.NodeKey);
+
+            Assert.AreEqual(20, btree.FindNodeByKey(16).Node.RightChild.NodeKey);
+            Assert.AreEqual(20, btree.FindNodeByKey(17).Node.Parent.NodeKey);
+            Assert.AreEqual(20, btree.FindNodeByKey(22).Node.Parent.NodeKey);
+            Assert.AreEqual(23, btree.FindNodeByKey(22).Node.RightChild.NodeKey);
+            Assert.AreEqual(null, btree.FindNodeByKey(22).Node.LeftChild);
+        }
+        
+        [TestMethod]
+        public void TestDelete_4()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(22);
+            Assert.AreEqual(false, btree.FindNodeByKey(22).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(23).NodeHasKey);
+            Assert.AreEqual(20, btree.FindNodeByKey(23).Node.LeftChild.NodeKey);
+            Assert.AreEqual(null, btree.FindNodeByKey(23).Node.RightChild);
+        }
+
+        [TestMethod]
+        public void TestDelete_5()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(17);
+            Assert.AreEqual(false, btree.FindNodeByKey(17));
+        }
+
+        [TestMethod]
+        public void TestDelete_6()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(23);
+            Assert.AreEqual(false, btree.FindNodeByKey(23).NodeHasKey);
+        }
+
+        [TestMethod]
+        public void TestDelete_7()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(-1);
+            Assert.AreEqual(false, btree.FindNodeByKey(-1).NodeHasKey);
+        }
+
+        [TestMethod]
+        public void TestDelete_8()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(3);
+            Assert.AreEqual(false, btree.FindNodeByKey(3).NodeHasKey);
+        }
+
+        [TestMethod]
+        public void TestDelete_9()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(20);
+            Assert.AreEqual(false, btree.FindNodeByKey(20).NodeHasKey);
         }
 
         [TestMethod]
