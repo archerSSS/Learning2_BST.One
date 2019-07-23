@@ -259,6 +259,35 @@ namespace AlgoTest_1
         }
 
         [TestMethod]
+        public void TestDelete_10()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(16);
+            Assert.AreEqual(false, btree.FindNodeByKey(16).NodeHasKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(17).NodeHasKey);
+            Assert.AreEqual(18, btree.FindNodeByKey(17).Node.RightChild.NodeKey);
+            Assert.AreEqual(8, btree.FindNodeByKey(17).Node.LeftChild.NodeKey);
+            Assert.AreEqual(null, btree.FindNodeByKey(17).Node.Parent);
+
+            Assert.AreEqual(17, btree.FindNodeByKey(17).Node.LeftChild.Parent.NodeKey);
+            Assert.AreEqual(17, btree.FindNodeByKey(8).Node.Parent.NodeKey);
+            Assert.AreEqual(17, btree.FindNodeByKey(17).Node.RightChild.Parent.NodeKey);
+            Assert.AreEqual(17, btree.FindNodeByKey(18).Node.Parent.NodeKey);
+        }
+
+        [TestMethod]
+        public void TestDelete_11()
+        {
+            BST<int> btree = GetTree();
+
+            btree.DeleteNodeByKey(0);
+            Assert.AreEqual(-1, btree.FindNodeByKey(1).Node.LeftChild.NodeKey);
+            Assert.AreEqual(true, btree.FindNodeByKey(-1).Node != null);
+            Assert.AreEqual(false, btree.FindNodeByKey(0).NodeHasKey);
+        }
+
+        [TestMethod]
         public void TestBit_1()
         {
             int y1 = 7 << 2;

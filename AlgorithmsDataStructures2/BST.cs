@@ -181,7 +181,11 @@ namespace AlgorithmsDataStructures2
                 else child.Parent.RightChild = new_child;
                 new_child.Parent = child.Parent;
             }
-            else Root = new_child;
+            else
+            {
+                Root = new_child;
+                Root.Parent = null;
+            }
         }
 
         private void RebindChildren(BSTNode<T> node, BSTNode<T> successor)
