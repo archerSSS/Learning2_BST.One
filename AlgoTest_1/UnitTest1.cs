@@ -40,6 +40,29 @@ namespace AlgoTest_1
         }
 
         [TestMethod]
+        public void TestAdd_1()
+        {
+            BST<int> tree = GetTree();
+
+            Assert.AreEqual(14, tree.Count());
+
+            tree.AddKeyValue(12, 200);
+            tree.AddKeyValue(14, 200);
+            tree.AddKeyValue(100, 200);
+            tree.AddKeyValue(19, 200);
+            tree.AddKeyValue(52, 200);
+            tree.AddKeyValue(5, 200);
+
+            Assert.AreEqual(true, tree.FindNodeByKey(5).NodeHasKey);
+            Assert.AreEqual(true, tree.FindNodeByKey(12).NodeHasKey);
+            Assert.AreEqual(true, tree.FindNodeByKey(14).NodeHasKey);
+            Assert.AreEqual(true, tree.FindNodeByKey(19).NodeHasKey);
+            Assert.AreEqual(true, tree.FindNodeByKey(52).NodeHasKey);
+            Assert.AreEqual(true, tree.FindNodeByKey(100).NodeHasKey);
+            Assert.AreEqual(20, tree.Count());
+        }
+
+        [TestMethod]
         public void TestFind_1()
         {
             BST<int> tree = new BST<int>(null);
@@ -402,15 +425,18 @@ namespace AlgoTest_1
             Assert.AreEqual(true, btree.FindNodeByKey(6).NodeHasKey);
             Assert.AreEqual(true, btree.FindNodeByKey(18).NodeHasKey);
             Assert.AreEqual(null, btree.FindNodeByKey(18).Node.Parent);
+            Assert.AreEqual(5, btree.Count());
         }
 
         [TestMethod]
-        public void TestBit_1()
+        public void TestDelete_16()
         {
-            int y1 = 7 << 2;
-            int y2 = y1 ^ 5;
-            int y3 = y2 & 8;
-            int u = 25 & 8;
+            BST<int> btree = new BST<int>(null);
+            btree.AddKeyValue(16, 200);
+            Assert.AreEqual(1, btree.Count());
+
+            btree.DeleteNodeByKey(16);
+            Assert.AreEqual(0, btree.Count());
         }
 
         // Tree scheme:
@@ -440,6 +466,11 @@ namespace AlgoTest_1
             btree.AddKeyValue(23, 100);
             btree.AddKeyValue(20, 100);
             return btree;
+        }
+
+        [TestMethod]
+        public void TestBit_1()
+        {
         }
     }
 }

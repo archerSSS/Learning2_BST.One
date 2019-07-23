@@ -21,12 +21,7 @@ namespace AlgorithmsDataStructures2
         }
     }
 
-
-
-    // 1. node
-    // 2. true или false если родительский
-    // 3. true если родительский 
-    // промежуточный результат поиска
+    
     public class BSTFind<T>
     {
         // null если не найден узел, и в дереве только один корень
@@ -43,7 +38,7 @@ namespace AlgorithmsDataStructures2
 
     public class BST<T>
     {
-        BSTNode<T> Root; // корень дерева, или null
+        BSTNode<T> Root;
 
         public BST(BSTNode<T> node)
         {
@@ -57,11 +52,11 @@ namespace AlgorithmsDataStructures2
                 BSTFind<T> bst_find = new BSTFind<T>();
                 if (Root.LeftChild != null || Root.RightChild != null)
                     return FindNodeByKey(key, Root, bst_find);
+                bst_find.Node = Root;
                 bst_find.NodeHasKey = Root.NodeKey == key;
                 bst_find.ToLeft = Root.NodeKey > key;
                 return bst_find;
             }
-            // ищем в дереве узел и сопутствующую информацию по ключу
             return null;
         }
 
@@ -85,8 +80,7 @@ namespace AlgorithmsDataStructures2
                 else Root.RightChild = new BSTNode<T>(key, val, Root);
                 return true;
             }
-            // добавляем ключ-значение в дерево
-            return false; // если ключ уже есть
+            return false;
         }
 
         public BSTNode<T> FinMinMax(BSTNode<T> FromNode, bool FindMax)
@@ -104,40 +98,42 @@ namespace AlgorithmsDataStructures2
 
                 return MinMax;
             }
-            // ищем максимальное/минимальное в поддереве
             return null;
         }
 
         public bool DeleteNodeByKey(int key)
         {
             BSTFind<T> bst_find = FindNodeByKey(key);
+            
             if (bst_find.NodeHasKey)
             {
-                BSTNode<T> node = bst_find.Node;
-                BSTNode<T> successor;
-                if (node.RightChild != null)
+                if (bst_find.Node.Equals(Root)) Root = null;
+                else
                 {
-                    successor = FindSuccessor(node.RightChild);
-                    RemoveBounds(successor);
-                    RebindChildren(node, successor);
-                    ReplaceChildWith(node, successor);
+                    BSTNode<T> node = bst_find.Node;
+                    BSTNode<T> successor;
+                    if (node.RightChild != null)
+                    {
+                        successor = FindSuccessor(node.RightChild);
+                        RemoveBounds(successor);
+                        RebindChildren(node, successor);
+                        ReplaceChildWith(node, successor);
+                    }
+                    else if (node.LeftChild != null)
+                        ReplaceChildWith(node, node.LeftChild);
+                    else if (node.NodeKey < node.Parent.NodeKey) node.Parent.LeftChild = null;
+                    else node.Parent.RightChild = null;
                 }
-                else if (node.LeftChild != null)
-                    ReplaceChildWith(node, node.LeftChild);
-                else if (node.NodeKey < node.Parent.NodeKey) node.Parent.LeftChild = null;
-                else node.Parent.RightChild = null;
-
                 return true;
             }
-            // удаляем узел по ключу
-            return false; // если узел не найден
+            return false;
         }
 
         public int Count()
         {
             if (Root != null)
                 return CountNodes(Root.RightChild) + CountNodes(Root.LeftChild) + 1;
-            return 0; // количество узлов в дереве
+            return 0;
         }
 
         private BSTFind<T> FindNodeByKey(int key, BSTNode<T> node, BSTFind<T> bst_find)
@@ -161,7 +157,7 @@ namespace AlgorithmsDataStructures2
         // Поиск производится либо от правого либо от левого потомка удаляемого узла.
         //
         // Поиск продолжается по левым потомкам пока не доберется до узла не имеющего 
-        //      своего левого потомка и возвращает этот узел.
+        //      своего левого потомка и возвращает последний найденый узел.
         // 
         //
         private BSTNode<T> FindSuccessor(BSTNode<T> node)
