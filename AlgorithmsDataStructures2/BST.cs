@@ -166,10 +166,8 @@ namespace AlgorithmsDataStructures2
         //
         private BSTNode<T> FindSuccessor(BSTNode<T> node)
         {
-            while (node.LeftChild != null || node.RightChild != null)
-                if (node.LeftChild != null)
-                    node = node.LeftChild;
-
+            while (node.LeftChild != null)
+                node = node.LeftChild;
             return node;
         }
 
